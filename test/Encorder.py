@@ -2,13 +2,12 @@ import RPi.GPIO as GPIO
 import wiringpi as pi
 import time
  
-pin_a=17
-pin_b=27
+PIN_A=17
+PIN_B=27
  
-pin_pwm=2
+
 IN1_MOTOR_PINA = 14
 IN1_MOTOR_PINB = 15
-pwm=None
  
 prev_data=0
 angle=0.
@@ -24,15 +23,15 @@ def main():
             time.sleep(0.1)
     except KeyboardInterrupt:
         print ("break")
-        GPIO.remove_event_detect(pin_a)
-        GPIO.remove_event_detect(pin_b)
+        GPIO.remove_event_detect(PIN_A)
+        GPIO.remove_event_detect(PIN_B)
         GPIO.cleanup()
  
 def init():
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
-    GPIO.setup(pin_a, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    GPIO.setup(pin_b, GPIO.IN, pull_up_down=GPIO.PUD_UP)    
+    GPIO.setup(PIN_A, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(PIN_B, GPIO.IN, pull_up_down=GPIO.PUD_UP)    
 
     pi.wiringPiSetupGpio()
     pi.pinMode( IN1_MOTOR_PINA, pi.OUTPUT )
@@ -47,8 +46,8 @@ def init():
     pi.softPwmWrite( IN1_MOTOR_PINA, 0 )
     pi.softPwmWrite( IN1_MOTOR_PINB, 0 )
     
-    GPIO.add_event_detect(pin_a, GPIO.BOTH, callback=callback)
-    GPIO.add_event_detect(pin_b, GPIO.BOTH, callback=callback)
+    GPIO.add_event_detect(PIN_A, GPIO.BOTH, callback=callback)
+    GPIO.add_event_detect(PIN_B, GPIO.BOTH, callback=callback)
  
     
 def motor_cntl():
@@ -64,8 +63,8 @@ def motor_cntl():
 def callback(gpio_pin):
     global angle, prev_data
  
-    current_a=GPIO.input(pin_a)
-    current_b=GPIO.input(pin_b)
+    current_a=GPIO.input(PIN_A)
+    current_b=GPIO.input(PIN_B)
  
     encoded=(current_a<<1)|current_b
     sum=(prev_data<<2)|encoded
