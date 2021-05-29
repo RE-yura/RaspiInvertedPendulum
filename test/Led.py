@@ -3,12 +3,14 @@
 # GPIO25を出力としてLEDに給電する
 import RPi.GPIO as GPIO
 from time import sleep
- 
+
+LED_PIN 17
+
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(17, GPIO.OUT)
+GPIO.setup(LED_PIN, GPIO.OUT)
 
 while True:
-    GPIO.output(17, GPIO.HIGH)
+    GPIO.output(LED_PIN, GPIO.HIGH)
     sleep(0.5)
-    GPIO.output(17, GPIO.LOW)
+    GPIO.output(LED_PIN, GPIO.LOW)
     sleep(0.5)

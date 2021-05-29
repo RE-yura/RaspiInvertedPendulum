@@ -10,7 +10,7 @@ sudo apt-get install build-essential python-dev python-smbus git
 cd ~
 git clone https://github.com/adafruit/Adafruit_Python_ADS1x15.git
 cd Adafruit_Python_ADS1x15
-sudo python setup.py install'''
+sudo python setup.py install
 ```
 
 <br>
@@ -95,5 +95,5 @@ i2c-1   i2c    20804000.i2c         I2C adapter
 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 70: -- -- -- -- -- -- -- --
 ```
-→ [ばっくらっしゅの備忘録](http://koyama4284.blogspot.com/2016/11/orange-pi-pc-lm75a-2.html/)
+→ [ばっくらっしゅの備忘録](http://koyama4284.blogspot.com/2016/11/orange-pi-pc-lm75a-2.html)
 
