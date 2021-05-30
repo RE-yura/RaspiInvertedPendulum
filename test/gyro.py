@@ -4,6 +4,7 @@ import smbus
 import math
 from time import sleep
 import time
+import signal
 import numpy as np
 # import matplotlib.pyplot as plt
 
@@ -19,6 +20,9 @@ class Gyro():
         self.angle = 0.0
 
         self.PWR_MGMT_1 = 0x6b
+        signal.signal(signal.SIGALRM, self.intervalHandler)
+        signal.setitimer(signal.ITIMER_REAL, 1, 0.1)
+
 
     def read_word(self, adr):
         smbus.SMBus(1).write_byte_data(self.DEV_ADDR, self.PWR_MGMT_1, 0)
@@ -32,6 +36,12 @@ class Gyro():
         if (val >= 0x8000):  return -((65535 - val) + 1)
         else:  return val
 
+    def intervalHandler(self, signum, frame):
+        self.getAccel()
+        self.getGyro()
+        self.getAngle()
+        print("test")
+
     def getGyro(self):
         for j in range(3):
             self.gr[j] = self.read_word_sensor(self.GYRO_OUT[j])/ 16384.0
@@ -39,6 +49,7 @@ class Gyro():
     def getAccel(self):
         for j in range(3):
             self.ac[j] = self.read_word_sensor(self.ACCEL_OUT[j])/ 16384.0
+        # print(self.ac[0])
 
     def getAngle(self):
             self.angle = np.arctan2(
@@ -52,14 +63,15 @@ def main():
     #==================================================
 
     try:
-        while 1:
-            gyro.getAccel()
-            gyro.getGyro()
-            gyro.getAngle()
 
+        while 1:
+            # gyro.getAccel()
+            gyro.getGyro()
+            # gyro.getAngle()
+            sleep(0.1)
             # print ('{0:4.3f},   {0:4.3f},    {0:4.3f},     {0:4.3f},      {0:4.3f},      {0:4.3f},' .format(gyro.gr[0], gyro.gr[1], gyro.gr[2], gyro.ac[0], gyro.ac[1], gyro.ac[2]))
 
-            print ('{0:4.3f}' .format(gyro.angle))
+            # print ('{0:4.3f}' .format(gyro.angle))
 
 
     except KeyboardInterrupt:

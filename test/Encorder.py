@@ -6,14 +6,21 @@ from enum import Enum
 class DriveType(Enum):
     ROT_RIGHT = 1
     ROT_LEFT = 2
- 
-ENCORDER_PIN_1A = 17
-ENCORDER_PIN_1B = 27
- 
-MOTOR_PIN_1A = 14
-MOTOR_PIN_1B = 15
 
-MOTOR_GEAR = 1970   #ざっとキャリブレーション
+class PinType(): 
+    ENCORDER_1A = 17
+    ENCORDER_1B = 27
+    ENCORDER_2A = 5
+    ENCORDER_2B = 6
+    
+    MOTOR_1A = 14
+    MOTOR_1B = 15
+    MOTOR_2A = 23
+    MOTOR_2B = 24
+
+class Gear():
+    MOTOR_GEAR_1 = 1970   #ざっとキャリブレーション
+    MOTOR_GEAR_2 = 1970   #ざっとキャリブレーション
 
  
 class EncoderedMotor():
@@ -55,7 +62,7 @@ class EncoderedMotor():
 
 
         # モーターの初期状態
-        pi.softPwmWrite( self.IN_MOTOR_PIN_A, 10 )
+        pi.softPwmWrite( self.IN_MOTOR_PIN_A, 0 )
         pi.softPwmWrite( self.IN_MOTOR_PIN_B, 0 )
         
         GPIO.add_event_detect(self.IN_ENCORDER_PIN_A, GPIO.BOTH, callback=self.callback)
@@ -87,11 +94,16 @@ class EncoderedMotor():
     
         self.prev_data=encoded
 
+    def __del__(self):
+        GPIO.remove_event_detect(self.IN_ENCORDER_PIN_A)
+        GPIO.remove_event_detect(self.IN_ENCORDER_PIN_B)
+        GPIO.cleanup()
 
+        
 
 def main():
     #=======初期設定===================================
-    encordered_motor_R = EncoderedMotor(MOTOR_GEAR, ENCORDER_PIN_1A, ENCORDER_PIN_1B, MOTOR_PIN_1A, MOTOR_PIN_1B)#インスタンス生成
+    encordered_motor_R = EncoderedMotor(Gear.MOTOR_GEAR_1, PinType.ENCORDER_1A, PinType.ENCORDER_1B, PinType.MOTOR_1A, PinType.MOTOR_1B)#インスタンス生成
 
     #==================================================
 
@@ -100,10 +112,8 @@ def main():
             encordered_motor_R.motor_ctrl(DriveType.ROT_RIGHT, 10)
             time.sleep(0.1)
     except KeyboardInterrupt:
+        del encordered_motor_R
         print ("while_break")
-        GPIO.remove_event_detect(encordered_motor_R.IN_ENCORDER_PIN_A)
-        GPIO.remove_event_detect(encordered_motor_R.IN_ENCORDER_PIN_B)
-        GPIO.cleanup()
  
 if __name__ == "__main__":   
     main()
