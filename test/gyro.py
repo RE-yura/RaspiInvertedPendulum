@@ -1,124 +1,64 @@
-from mpu6050 import mpu6050
+# -*- coding: utf-8 -*-
+
+import smbus
+import math
 from time import sleep
-
-sensor = mpu6050(0x68)
-
+import time
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
-def plot_loop():
-    # センサーデータ取得
-    temp = "%4.1f" % sensor.get_temp()
-    gyro_data = sensor.get_gyro_data()
-    accel_data = sensor.get_accel_data()
+class Gyro():
     
-    fig, (ax_temp, ax_gyro, ax_accel) = plt.subplots(ncols=3, figsize=(10,7))
-    
-    # X座標
-    sec = np.arange(-np.pi, np.pi, 0.1)
-    
-    # 温度のY座標
-    temp_list = np.zeros(63)
-    temp_list[0] = temp
-    line_temp, = ax_temp.plot(sec, temp_list, color="red")
-    ax_temp.set_title("temperature")
-    ax_temp.set_ylim(-10, 40)
-    ax_temp.set_xticks([]) # X軸のメモリ非表示
+    DEV_ADDR = 0x68
+    ACCEL_OUT = [0x3b, 0x3d,0x3f]
+    GYRO_OUT = [0x43, 0x45, 0x47]
 
-    # 角速度のY座標
-    # ロール軸(x)
-    gyro_list_x = np.zeros(63)
-    gyro_list_x[0] = "%6.3f" % gyro_data['x']
-    gyro_x_lines, = ax_gyro.plot(sec, gyro_list_x, color="red", label="x")
+    gr = [0, 0, 0]
+    ac = [0, 0, 0]
 
-    # ピッチ軸(y)
-    gyro_list_y = np.zeros(63)
-    gyro_list_y[0] = "%6.3f" % gyro_data['y']
-    gyro_y_lines, = ax_gyro.plot(sec, gyro_list_y, color="blue", label="y")
-    
-    # ヨー軸(z)
-    gyro_list_z = np.zeros(63)
-    gyro_list_z[0] = "%6.3f" % gyro_data['z']
-    gyro_z_lines, = ax_gyro.plot(sec, gyro_list_z, color="green", label="z")
-    
-    ax_gyro.legend() # ラベル描画
-    ax_gyro.set_title("gyro")
-    ax_gyro.set_ylim(-300, 300)
-    ax_gyro.set_xticks([]) # X軸のメモリ非表示
+    PWR_MGMT_1 = 0x6b
 
-    # 加速度のY座標
-    # ロール軸(x)
-    accel_list_x = np.zeros(63)
-    accel_list_x[0] = "%6.3f" % accel_data['x']
-    accel_x_lines, = ax_accel.plot(sec, accel_list_x, color="red", label="x")
+    def read_word(self, adr):
+        smbus.SMBus(1).write_byte_data(self.DEV_ADDR, self.PWR_MGMT_1, 0)
+        high = smbus.SMBus(1).read_byte_data(self.DEV_ADDR, adr)
+        low = smbus.SMBus(1).read_byte_data(self.DEV_ADDR, adr+1)
+        val = (high << 8) + low
+        return val
 
-    # ピッチ軸(y)
-    accel_list_y = np.zeros(63)
-    accel_list_y[0] = "%6.3f" % accel_data['y']
-    accel_y_lines, = ax_accel.plot(sec, accel_list_y, color="blue", label="y")
-    
-    # ヨー軸(z)
-    accel_list_z = np.zeros(63)
-    accel_list_z[0] = "%6.3f" % accel_data['z']
-    accel_z_lines, = ax_accel.plot(sec, accel_list_z, color="green", label="z")
+    def read_word_sensor(self, adr):
+        val = self.read_word(adr)
+        if (val >= 0x8000):  return -((65535 - val) + 1)
+        else:  return val
+
+
+
+
+    def getGyro(self):
+        for j in range(3):
+            self.gr[j] = self.read_word_sensor(self.GYRO_OUT[j])/ 16384.0
+
+    def getAccel(self):
+        for j in range(3):
+            self.ac[j] = self.read_word_sensor(self.ACCEL_OUT[j])/ 16384.0
+
+
+
+
+def main():
+    #=======初期設定(本当は1行で済ませたい)===================================
+    gyro = Gyro()
+    #=========================================================================
+
+    try:
+        while 1:
+            gyro.getAccel()
+            gyro.getGyro()
+
+            print ('{0:4.3f},   {0:4.3f},    {0:4.3f},     {0:4.3f},      {0:4.3f},      {0:4.3f},' .format(gyro.gr[0], gyro.gr[1], gyro.gr[2], gyro.ac[0], gyro.ac[1], gyro.ac[2]))
+
+    except KeyboardInterrupt:
+        print ("while_break")
         
-    ax_accel.legend() # ラベル描画
-    ax_accel.set_title("accel")
-    ax_accel.set_ylim(-30, 30)
-    ax_accel.set_xticks([]) # X軸のメモリ非表示
-
-    # plotし続ける
-    while True:
-        # センサーデータ取得
-        temp = "%4.1f" % sensor.get_temp()
-        gyro_data = sensor.get_gyro_data()
-        accel_data = sensor.get_accel_data()
-        
-        # データの更新
-        sec += 0.1
-        
-        temp_list = np.roll(temp_list, 1)
-        temp_list[0] = temp
-
-        gyro_list_x = np.roll(gyro_list_x, 1)
-        gyro_list_x[0] = "%6.3f" % gyro_data['x']
-        gyro_list_y = np.roll(gyro_list_y, 1)
-        gyro_list_y[0] = "%6.3f" % gyro_data['y']
-        gyro_list_z = np.roll(gyro_list_z, 1)
-        gyro_list_z[0] = "%6.3f" % gyro_data['z']
-
-        accel_list_x = np.roll(accel_list_x, 1)
-        accel_list_x[0] = "%6.3f" % accel_data['x']
-        accel_list_y = np.roll(accel_list_y, 1)
-        accel_list_y[0] = "%6.3f" % accel_data['y']
-        accel_list_z = np.roll(accel_list_z, 1)
-        accel_list_z[0] = "%6.3f" % accel_data['z']
-
-        # グラフへデータの再セット
-        line_temp.set_data(sec, temp_list)
-        line_temp.set_data(sec, temp_list)
-        
-        gyro_x_lines.set_data(sec, gyro_list_x)
-        gyro_y_lines.set_data(sec, gyro_list_y)
-        gyro_z_lines.set_data(sec, gyro_list_z)
-
-        accel_x_lines.set_data(sec, accel_list_x)
-        accel_y_lines.set_data(sec, accel_list_y)
-        accel_z_lines.set_data(sec, accel_list_z)
-
-        # X軸の更新
-        ax_temp.set_xlim((sec.min(), sec.max()))
-        ax_gyro.set_xlim((sec.min(), sec.max()))
-        ax_accel.set_xlim((sec.min(), sec.max()))
-
-        print("【温度】" + temp + "℃")
-        print("【角速度】 x:" + "%6.3f" % gyro_data['x'] + " y:" + "%6.3f" % gyro_data['y'] + " z:" + "%6.3f" % gyro_data['z'])
-        print("【加速度】 x:" + "%6.3f" % accel_data['x'] + " y:" + "%6.3f" % accel_data['y'] + " z:" + "%6.3f" % accel_data['z'])
-
-        plt.pause(0.1) # sleep時間（秒）
-
-if __name__ == "__main__":
-    plot_loop()
-
-
-
+     
+if __name__ == "__main__":   
+    main()
