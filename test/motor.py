@@ -26,10 +26,10 @@ countPower = 0
 try:
     while True:
         if(time.time() % 4 < 2):
-            pi.softPwmWrite( IN1_MOTOR_PINA, 0)
-            pi.softPwmWrite( IN1_MOTOR_PINB, 95 )
+            pi.softPwmWrite( IN1_MOTOR_PINA, 10)
+            pi.softPwmWrite( IN1_MOTOR_PINB, 0 )
         else:
-            pi.softPwmWrite( IN1_MOTOR_PINA, 95)
+            pi.softPwmWrite( IN1_MOTOR_PINA, 10)
             pi.softPwmWrite( IN1_MOTOR_PINB, 0 )
 
 # プログラム強制終了時にモーターを止める                        
