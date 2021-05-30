@@ -71,9 +71,9 @@ class EncoderedMotor():
     def motor_ctrl(self, TYPE, pwm):
         if TYPE == DriveType.ROT_RIGHT:                               #モータ反動あり
             pi.softPwmWrite( self.IN_MOTOR_PIN_A, 0 )
-            pi.softPwmWrite( self.IN_MOTOR_PIN_B, pwm )
+            pi.softPwmWrite( self.IN_MOTOR_PIN_B, int(pwm))
         elif TYPE == DriveType.ROT_LEFT:
-            pi.softPwmWrite( self.IN_MOTOR_PIN_A, pwm )
+            pi.softPwmWrite( self.IN_MOTOR_PIN_A, int(pwm))
             pi.softPwmWrite( self.IN_MOTOR_PIN_B, 0 )
 
 
@@ -109,8 +109,12 @@ def main():
 
     try:
         while(True):
-            encordered_motor_R.motor_ctrl(DriveType.ROT_RIGHT, 10)
-            time.sleep(0.1)
+            try:
+                encordered_motor_R.motor_ctrl(DriveType.ROT_RIGHT, 10)
+                time.sleep(0.1)
+            except IOError:
+                pass
+
     except KeyboardInterrupt:
         del encordered_motor_R
         print ("while_break")
