@@ -23,24 +23,25 @@ class DriveUnit():
         self.err_i = 0
         self.dt = 0
         self.now = 0
-        self.preTime = 0
+        self.preTime = time.time()
 
         self.motorR = EncoderedMotor(Gear.MOTOR_GEAR_1, PinType.ENCORDER_1A, PinType.ENCORDER_1B, PinType.MOTOR_1A, PinType.MOTOR_1B)#インスタンス生成
 
         self.motorL = EncoderedMotor(Gear.MOTOR_GEAR_2, PinType.ENCORDER_2A, PinType.ENCORDER_2B, PinType.MOTOR_2A, PinType.MOTOR_2B)#インスタンス生成
 
-        # signal.signal(signal.SIGALRM, self.intervalHandler)
-        # signal.setitimer(signal.ITIMER_REAL, 1.0, 0.5)
+        signal.signal(signal.SIGALRM, self.intervalHandler)
+        signal.setitimer(signal.ITIMER_REAL, 0.01, 0.02)
+
         self.setPID(Kpp, Kpd, Kpi)
         
 
    
-    # def intervalHandler(self, signum, frame):
-    #     self.gyro.getAccel()
-    #     self.gyro.getGyro()
-    #     self.gyro.getAngle()
-    #     self.motorR.encorder2angle()
-    #     # self.motorL.encorder2angle()
+    def intervalHandler(self, signum, frame):
+        self.gyro.getAccel()
+        self.gyro.getGyro()
+        self.gyro.getAngle()
+        self.motorR.encorder2angle()
+        self.motorL.encorder2angle()
     
     
     def drive(self, dir, pwm):
@@ -57,8 +58,7 @@ class DriveUnit():
         self.preTime = self.now
 
     def calc_errp(self):
-        self.gyro.getParam()
-        self.err_p = float(self.gyro.angle / 90.0) + 1  # P成分：傾き-180～0度 → -1～1
+        self.err_p = self.gyro.angle / 90.0 - 1  # P成分：傾き-180～0度 → -1～1
         # print(self.gyro.angle)
 
 
@@ -75,6 +75,7 @@ class DriveUnit():
         self.calc_errd()
         self.calc_erri()
         self.u = self.Kpp * self.err_p +  self.Kpd * self.err_d + self.Kpi * self.err_i
+        print(self.err_p)
         self.balance()
 
 
@@ -85,9 +86,9 @@ class DriveUnit():
 
     def balance(self):
         if self.u < 0:
-            self.drive(Direction.forward, int(self.u))
+            self.drive(Direction.forward, self.u)
         elif self.u > 0:
-            self.drive(Direction.backward, int(self.u))
+            self.drive(Direction.backward, self.u)
                         
     def Gyro2Motor(self):
         if self.gyro.angle > 0:
@@ -104,7 +105,7 @@ class DriveUnit():
 
 def main():
     #=======初期設定===================================
-    unit = DriveUnit(0, 30, 0)
+    unit = DriveUnit(0, 900, 10)
     # gyro = Gyro()
     #==================================================
     count = 0
@@ -118,7 +119,7 @@ def main():
             # else:
             #     unit.drive(Direction.backward,-int(gyro.angle/2))
 
-            time.sleep(0.1)
+            time.sleep(0.001)
 
         
         # except IOError:

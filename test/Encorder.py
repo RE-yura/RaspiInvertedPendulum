@@ -65,8 +65,8 @@ class EncoderedMotor():
         pi.softPwmWrite( self.IN_MOTOR_PIN_A, 0 )
         pi.softPwmWrite( self.IN_MOTOR_PIN_B, 0 )
         
-        GPIO.add_event_detect(self.IN_ENCORDER_PIN_A, GPIO.BOTH, callback=self.callback)
-        GPIO.add_event_detect(self.IN_ENCORDER_PIN_B, GPIO.BOTH, callback=self.callback)
+        # GPIO.add_event_detect(self.IN_ENCORDER_PIN_A, GPIO.BOTH, callback=self.callback)
+        # GPIO.add_event_detect(self.IN_ENCORDER_PIN_B, GPIO.BOTH, callback=self.callback)
 
     def motor_ctrl(self, TYPE, pwm):
         if TYPE == DriveType.ROT_RIGHT:                               #モータ反動あり
@@ -77,7 +77,7 @@ class EncoderedMotor():
             pi.softPwmWrite( self.IN_MOTOR_PIN_B, 0 )
 
 
-    def callback(self, gpio_pin):
+    def encorder2angle(self):
         current_a=GPIO.input(self.IN_ENCORDER_PIN_A)
         current_b=GPIO.input(self.IN_ENCORDER_PIN_B)
     
@@ -95,8 +95,8 @@ class EncoderedMotor():
         self.prev_data=encoded
 
     def __del__(self):
-        GPIO.remove_event_detect(self.IN_ENCORDER_PIN_A)
-        GPIO.remove_event_detect(self.IN_ENCORDER_PIN_B)
+        # GPIO.remove_event_detect(self.IN_ENCORDER_PIN_A)
+        # GPIO.remove_event_detect(self.IN_ENCORDER_PIN_B)
         GPIO.cleanup()
 
         
