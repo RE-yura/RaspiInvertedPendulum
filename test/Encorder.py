@@ -12,10 +12,13 @@ MOTOR_GEAR = 1970   #ざっとキャリブレーション
 
  
 class EncoderedMotor():
-    angle = 0 
-    prev_data = 0
-
-    # def __init__(self):
+    def __init__(self, gears, ENCORDER_PIN_A, ENCORDER_PIN_B,  MOTOR_PIN_A, MOTOR_PIN_B):
+        self.angle = 0 
+        self.prev_data = 0
+        self.setDelta(gears)
+        self.setEncorderPin(ENCORDER_PIN_A, ENCORDER_PIN_B)
+        self.setMotorPin(MOTOR_PIN_A, MOTOR_PIN_B)
+        self.setup()
 
     def setDelta(self, gears):
         self.delta = 360./gears
@@ -73,23 +76,20 @@ class EncoderedMotor():
         # print(bin(sum))
         if (sum==0b0010 or sum==0b1011 or sum==0b1101 or sum==0b0100):
             self.angle+=self.delta
-            # print ("plus", gpio_pin, angle)
+            print ("plus", gpio_pin, self.angle)
         elif(sum==0b0001 or sum==0b0111 or sum==0b1110 or sum==0b1000):
             self.angle-=self.delta
-            # print ("minus", gpio_pin, angle)
+            print ("minus", gpio_pin, self.angle)
     
         self.prev_data=encoded
 
 
 
 def main():
-    #=======初期設定(本当は1行で済ませたい)===================================
-    encordered_motor_R = EncoderedMotor()#インスタンス生成
-    encordered_motor_R.setDelta(MOTOR_GEAR) #モーター歯数代入
-    encordered_motor_R.setEncorderPin(ENCORDER_PIN_1A, ENCORDER_PIN_1B) #エンコーダーピン指定
-    encordered_motor_R.setMotorPin(MOTOR_PIN_1A, MOTOR_PIN_1B) #モーターピン指定
-    encordered_motor_R.setup() #モーターとエンコーダーのセットアップ
-    #=========================================================================
+    #=======初期設定===================================
+    encordered_motor_R = EncoderedMotor(MOTOR_GEAR, ENCORDER_PIN_1A, ENCORDER_PIN_1B, MOTOR_PIN_1A, MOTOR_PIN_1B)#インスタンス生成
+
+    #==================================================
 
     try:
         while(True):
