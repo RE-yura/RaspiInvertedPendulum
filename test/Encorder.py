@@ -1,6 +1,11 @@
 import RPi.GPIO as GPIO
 import wiringpi as pi
 import time
+from enum import Enum
+
+class DriveType(Enum):
+    ROT_RIGHT = 1
+    ROT_LEFT = 2
  
 ENCORDER_PIN_1A = 17
 ENCORDER_PIN_1B = 27
@@ -56,17 +61,16 @@ class EncoderedMotor():
         GPIO.add_event_detect(self.IN_ENCORDER_PIN_A, GPIO.BOTH, callback=self.callback)
         GPIO.add_event_detect(self.IN_ENCORDER_PIN_B, GPIO.BOTH, callback=self.callback)
 
-    def motor_ctrl(self):
-        if self.angle>180:                               #モータ反動あり
+    def motor_ctrl(self, TYPE, pwm):
+        if TYPE == DriveType.ROT_RIGHT:                               #モータ反動あり
             pi.softPwmWrite( self.IN_MOTOR_PIN_A, 0 )
-            pi.softPwmWrite( self.IN_MOTOR_PIN_B, 10 )
-        elif self.angle<-180:
-            pi.softPwmWrite( self.IN_MOTOR_PIN_A, 10 )
+            pi.softPwmWrite( self.IN_MOTOR_PIN_B, pwm )
+        elif TYPE == DriveType.ROT_LEFT:
+            pi.softPwmWrite( self.IN_MOTOR_PIN_A, pwm )
             pi.softPwmWrite( self.IN_MOTOR_PIN_B, 0 )
 
 
     def callback(self, gpio_pin):
- 
         current_a=GPIO.input(self.IN_ENCORDER_PIN_A)
         current_b=GPIO.input(self.IN_ENCORDER_PIN_B)
     
@@ -76,10 +80,10 @@ class EncoderedMotor():
         # print(bin(sum))
         if (sum==0b0010 or sum==0b1011 or sum==0b1101 or sum==0b0100):
             self.angle+=self.delta
-            print ("plus", gpio_pin, self.angle)
+            # print ("plus", gpio_pin, self.angle)
         elif(sum==0b0001 or sum==0b0111 or sum==0b1110 or sum==0b1000):
             self.angle-=self.delta
-            print ("minus", gpio_pin, self.angle)
+            # print ("minus", gpio_pin, self.angle)
     
         self.prev_data=encoded
 
@@ -93,7 +97,7 @@ def main():
 
     try:
         while(True):
-            encordered_motor_R.motor_ctrl()
+            encordered_motor_R.motor_ctrl(DriveType.ROT_RIGHT, 10)
             time.sleep(0.1)
     except KeyboardInterrupt:
         print ("while_break")
