@@ -1,3 +1,6 @@
+import csv
+
+
 class FileOp():
     def __init__(self):
         self.path = './GainParam.txt'
@@ -12,10 +15,14 @@ class FileOp():
 
     def WriteList(self, list):
         with open(self.path, mode='a') as f:
-            f.write('\t'.join(list))
+            f.write('\t'.join([str(float(j)) for j in list]))
             f.write('\n')
 
-    def ReadFile(self):
+    def ReadChar(self):
         with open(self.path) as f:
             print(f.read())
 
+    def ReadList(self):
+        with open(self.path, mode='r') as f:
+            read_data = [row for row in csv.reader(f, delimiter="\t")]
+            return read_data

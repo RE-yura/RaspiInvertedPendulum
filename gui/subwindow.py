@@ -12,9 +12,9 @@ class SubWindow:
     def __init__(self, parent=None):
         self.w = QDialog(parent)
         self.parent = parent
+        self.file = FileOp()
+        pre_data = self.file.ReadList()
 
-
-# ---------------
         okButton = QPushButton("OK")
         okButton.clicked.connect(self.getParam)
 
@@ -34,8 +34,7 @@ class SubWindow:
         for i in range(2):
             GainHBox = QHBoxLayout()
             for j in range(3):
-                self.gain_list[i][j] = QLineEdit()
-                # self.gain_list[i][j].setValidator()
+                self.gain_list[i][j] = QLineEdit(pre_data[i][j])
                 self.gain_list[i][j].setValidator(QDoubleValidator())
                 GainHBox.addWidget(self.gain_list[i][j])
             GainVBox.addLayout(GainHBox)
@@ -56,9 +55,8 @@ class SubWindow:
         self.w.exec_()
 
     def getParam(self):
-        file = FileOp()
-        file.ResetChar()
+        self.file.ResetChar()
         for i in range(2):
             print([j.text() for j in self.gain_list[i]])
-            file.WriteList([j.text() for j in self.gain_list[i]])
+            self.file.WriteList([j.text() for j in self.gain_list[i]])
         self.w.close()
