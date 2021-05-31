@@ -1,12 +1,11 @@
-#!/usr/bin/python3
+# !/usr/bin/python3
 # -*- coding: utf-8 -*-
-
-
-import sys
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
+# import numpy as np
 from PyQt5.QtCore import *
-import numpy as np
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from file import *
+import sys
 
 
 class Example(QWidget):
@@ -61,8 +60,11 @@ class Example(QWidget):
         self.show()
 
     def getParam(self):
+        file = FileOp()
+        file.ResetChar()
         for i in range(2):
             print([j.text() for j in self.gain_list[i]])
+            file.WriteList([j.text() for j in self.gain_list[i]])
 
 
 if __name__ == '__main__':
