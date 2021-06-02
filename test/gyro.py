@@ -65,14 +65,14 @@ def main():
 
     try:
 
-        while 1:
+        while True:
             # gyro.getAccel()
             # gyro.getGyro()
-            # gyro.getAngle()
+            gyro.getAngle()
+            print ('{0:4.3f}' .format(gyro.angle))
             sleep(0.1)
             # print ('{0:4.3f},   {0:4.3f},    {0:4.3f},     {0:4.3f},      {0:4.3f},      {0:4.3f},' .format(gyro.gr[0], gyro.gr[1], gyro.gr[2], gyro.ac[0], gyro.ac[1], gyro.ac[2]))
 
-            # print ('{0:4.3f}' .format(gyro.angle))
 
 
     except KeyboardInterrupt:
