@@ -3,6 +3,12 @@ import RPi.GPIO as GPIO
 import wiringpi as pi
 import time
 
+import sys, os
+sys.path.append(os.path.join('..', 'gui'))
+# from gui import *
+from client import *
+
+
 # モータードライバーを接続したGPIOピンの定義
 IN1_MOTOR_PINA = 14
 IN1_MOTOR_PINB = 15
