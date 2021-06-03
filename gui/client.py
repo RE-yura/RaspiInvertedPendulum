@@ -25,13 +25,16 @@ class Client():
         # 受信側アドレスでソケットを設定
         self.udpServSock.bind(SrcAddr)
 
-    def receiveUDP(self):
+    def receiveStr(self):
         try:
             data, addr = self.udpServSock.recvfrom(self.BUFSIZE) 
             # 受信データと送信アドレスを出力
-            print(data.decode(), addr)
+            # print(data.decode())
+            return data.decode()
         except BlockingIOError:
             pass
+
+
 def main():
     client = Client()
     while True:

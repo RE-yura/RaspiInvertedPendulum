@@ -16,7 +16,7 @@ class SubWindow:
         pre_data = self.file.ReadList()
 
         okButton = QPushButton("OK")
-        okButton.clicked.connect(self.getParam)
+        okButton.clicked.connect(self.regParam)
 
         cancelButton = QPushButton("Cancel")
         cancelButton.clicked.connect(self.w.close)
@@ -54,9 +54,10 @@ class SubWindow:
     def show(self):
         self.w.exec_()
 
-    def getParam(self):
+    def regParam(self):
         self.file.ResetChar()
         for i in range(2):
             print([j.text() for j in self.gain_list[i]])
             self.file.WriteList([j.text() for j in self.gain_list[i]])
+
         self.w.close()

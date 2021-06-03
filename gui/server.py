@@ -26,7 +26,7 @@ class Server():
         # 送信側アドレスでソケットを設定
         self.udpClntSock.bind(SrcAddr)
 
-    def sendUDP(self, str):
+    def sendStr(self, str):
         # 送信データの作成
         # self.data = str
         # バイナリに変換

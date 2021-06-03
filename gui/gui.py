@@ -12,6 +12,7 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
 
+        self.file = FileOp()
 
         layout = QGridLayout()
 
@@ -41,10 +42,15 @@ class MainWindow(QWidget):
         subWindow.show()
     
     def RunMode(self):
-        self.server.sendUDP("Run")
+        arrayFlo = [[0]*3]*2
+        arrayStr = self.file.ReadList()
+        for i in range(len(arrayStr)):
+            arrayFlo[i] = [float(j) for j in arrayStr[i]]
+        # print(arrayFlo)
+        self.server.sendStr("Run")
 
     def StopMode(self):
-        self.server.sendUDP("Stop")
+        self.server.sendStr("Stop")
 
 
 if __name__ == '__main__':
