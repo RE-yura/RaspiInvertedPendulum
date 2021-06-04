@@ -28,9 +28,15 @@ class MainWindow(QWidget):
         makeWindowButton.clicked.connect(self.makeWindow)
         layout.addWidget(makeWindowButton, 1, 0)
 
+        initAngleButton = QPushButton("Init", self)
+        initAngleButton.clicked.connect(self.initAngle)
+        layout.addWidget(initAngleButton, 1, 1)
+
+
         CloseButton = QPushButton("Close", self)        
-        CloseButton.clicked.connect(self.close)
-        layout.addWidget(CloseButton, 1, 1)
+        CloseButton.clicked.connect(self.closeWindow)
+        # CloseButton.clicked.connect(self.close)
+        layout.addWidget(CloseButton, 2, 0 , 1, 2)
         self.setLayout(layout)
 
         self.setWindowTitle('InvertedPendulum')
@@ -48,6 +54,14 @@ class MainWindow(QWidget):
             arrayFlo[i] = [float(j) for j in arrayStr[i]]
         # print(arrayFlo)
         self.server.sendStr("Run")
+
+    def closeWindow(self):
+        self.server.sendStr("Close")        
+        self.close()
+
+    def initAngle(self):
+        self.server.sendStr("Init")        
+        self.close()
 
     def StopMode(self):
         self.server.sendStr("Stop")

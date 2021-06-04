@@ -53,17 +53,16 @@ class Gyro():
 
     def getAngle(self):
         self.angle = np.arctan2(
-                self.ac[2], self.ac[1]) * 180 / 3.141592
+                self.ac[2], self.ac[0]) * 180 / 3.141592
         # print(self.angle)
 
 
 
 def main():
-    #=======初期設定===================================
-    gyro = Gyro()
-    #==================================================
-
     try:
+        #=======初期設定===================================
+        gyro = Gyro()
+        #==================================================
 
         while True:
             # gyro.getAccel()
@@ -73,11 +72,8 @@ def main():
             sleep(0.1)
             # print ('{0:4.3f},   {0:4.3f},    {0:4.3f},     {0:4.3f},      {0:4.3f},      {0:4.3f},' .format(gyro.gr[0], gyro.gr[1], gyro.gr[2], gyro.ac[0], gyro.ac[1], gyro.ac[2]))
 
-
-
     except KeyboardInterrupt:
         print ("while_break")
-        
-     
+
 if __name__ == "__main__":   
     main()
