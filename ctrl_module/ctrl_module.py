@@ -54,7 +54,7 @@ def main():
                 flag = 2
             
             elif mode == "Init":
-                flag = 3
+                ctrl.unit.gyro.setAngleoffset(ctrl.unit.gyro.angle_row)
 
             elif mode == "Close":
                 break
@@ -65,10 +65,13 @@ def main():
                 ctrl.unit.position_control()
                 # print(ctrl.unit.gyro.angle)
             elif flag == 2:
-                ctrl.unit.drive(ctrl.unit.FORWARD,0)                
+                ctrl.unit.drive(ctrl.unit.ACT_FORWARD,0)                
                 pass
 
-            time.sleep(0.001)
+            ctrl.unit.gyro.getAccel()
+            ctrl.unit.gyro.getAngle()
+            print(ctrl.unit.gyro.angle)
+            time.sleep(0.01)
 
     except KeyboardInterrupt:
         pass

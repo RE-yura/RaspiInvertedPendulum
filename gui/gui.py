@@ -61,7 +61,6 @@ class MainWindow(QWidget):
 
     def initAngle(self):
         self.server.sendStr("Init")        
-        self.close()
 
     def StopMode(self):
         self.server.sendStr("Stop")
