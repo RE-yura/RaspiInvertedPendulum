@@ -57,21 +57,23 @@ def main():
                 ctrl.unit.gyro.setAngleoffset(ctrl.unit.gyro.angle_row)
 
             elif mode == "Close":
+                ctrl.unit.drive(ctrl.unit.ACT_FORWARD,0)                
+  
                 break
 
             #車体動作
             if flag == 1:
-                # ctrl.unit.drive(ctrl.unit.FORWARD,10)
+                # ctrl.unit.drive(ctrl.unit.ACT_FORWARD,10)
                 ctrl.unit.position_control()
-                # print(ctrl.unit.gyro.angle)
+                print(ctrl.unit.u)
             elif flag == 2:
                 ctrl.unit.drive(ctrl.unit.ACT_FORWARD,0)                
-                pass
-
-            ctrl.unit.gyro.getAccel()
-            ctrl.unit.gyro.getAngle()
-            print(ctrl.unit.gyro.angle)
-            time.sleep(0.01)
+                ctrl.unit.gyro.getAccel()
+                ctrl.unit.gyro.getAngle()
+            else:
+                ctrl.unit.gyro.getAccel()
+                ctrl.unit.gyro.getAngle()
+            time.sleep(0.001)
 
     except KeyboardInterrupt:
         pass

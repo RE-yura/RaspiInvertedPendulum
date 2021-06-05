@@ -29,12 +29,15 @@ class SubWindow:
         hbox.addWidget(cancelButton)
 
         self.gain_list = [[0 for _ in range(3)] for _ in range(2)]
-
+        print(pre_data)
         GainVBox = QVBoxLayout()
         for i in range(2):
             GainHBox = QHBoxLayout()
             for j in range(3):
-                self.gain_list[i][j] = QLineEdit(pre_data[i][j])
+                if len(pre_data) == 2 and len(pre_data[0]) == 3:
+                    self.gain_list[i][j] = QLineEdit(pre_data[i][j])
+                else:
+                    self.gain_list[i][j] = QLineEdit("0.0")
                 self.gain_list[i][j].setValidator(QDoubleValidator())
                 GainHBox.addWidget(self.gain_list[i][j])
             GainVBox.addLayout(GainHBox)

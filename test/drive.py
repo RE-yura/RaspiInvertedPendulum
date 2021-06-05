@@ -33,12 +33,15 @@ class DriveUnit():
 
         self.lastErr = 0
 
+        self.UMAX = 100
         self.errP = 0
         self.errD = 0
         self.errI = 0
         self.gainP = 0
         self.gainD = 0
-        self.gainI = 0
+        self.gainI = 0.5
+        self.exu = 0
+        self.u = 0
 
         self.ANG_VELO = 780     #角速度±780dps
         self.dt = 0
@@ -69,12 +72,20 @@ class DriveUnit():
         self.preTime = self.now
 
     def calc_errp(self):   
-        self.errP = self.gyro.angle / 90.0 - 1  # P成分：傾き-180～0度 → -1～1
+        self.errP = (self.gyro.angle / 90.0 - 1) * self.UMAX  # P成分：傾き-180～0度 → -100～100
+
+        if abs(self.errP) < 0.1:
+            self.errP = 0
+
 
 
     def calc_errd(self):
-        self.errD = (self.errP - self.lastErr) / self.dt / self.ANG_VELO  # D成分：角速度±780dps → -1～1
+        self.errD = (self.errP - self.lastErr) / self.dt / self.ANG_VELO * self.UMAX  # D成分：角速度±780dps → -100～100
+        if abs(self.errD) < 10:
+            self.errD = 0
         self.lastErr = self.errP
+
+    
     
     def calc_erri(self):
         self.errI += self.errP * self.dt  # I成分
@@ -82,6 +93,7 @@ class DriveUnit():
 
     def position_control(self):
         self.gyro.getAccel()
+        self.gyro.getGyro()
         self.gyro.getAngle()
 
         #dt計算
@@ -94,8 +106,13 @@ class DriveUnit():
         
 
         #PWM計算
-        self.u = self.gainP * self.errP + self.gainD * self.errD + self.gainI * self.errI 
+        self.u = self.exu * self.u + (1 - self.exu) * (self.gainP * self.errP + self.gainD * self.errD + self.gainI * self.errI) 
         
+        if self.u > 100:
+            self.u = 100
+        elif self.u < -100:
+            self.u = -100
+
         #モーター駆動
         self.balance()
 
@@ -107,12 +124,10 @@ class DriveUnit():
 
 
     def balance(self):
-        if self.u > 5:
+        if self.u > 0:
             self.drive(self.ACT_FORWARD, self.u)
-        elif self.u < -5:
-            self.drive(self.ACT_BACKWARD, self.u)
         else:
-            self.drive(self.ACT_FORWARD, 0)                
+            self.drive(self.ACT_BACKWARD, self.u)
 
     def __del__(self):
         del self.gyro
@@ -124,7 +139,7 @@ class DriveUnit():
 def main():
     try:
         #=======初期設定===================================
-        unit = DriveUnit([180, 0, 0])
+        unit = DriveUnit([10, 0, 0])
         gyro = Gyro()
         # unit = DriveUnit(0, 1200, 0)
         #==================================================
