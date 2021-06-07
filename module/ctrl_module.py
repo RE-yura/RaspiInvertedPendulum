@@ -52,7 +52,8 @@ def main():
                     flag = 2
 
                 elif mode == "Init":
-                    ctrl.unit.gyro.setAngleoffset(ctrl.unit.gyro.angle_row)
+                    
+                    ctrl.unit.gyro.setAngleoffset()
 
                 elif mode == "Close":
                     ctrl.unit.drive(ctrl.unit.ACT_FORWARD, 0)
@@ -60,15 +61,14 @@ def main():
 
                 elif 'Change' in mode:
                     Carray = mode.split(" ")
+                    ctrl.unit.gyro.angle_offset += float(Carray[1])
                     print(float(Carray[1]))
-                    pass
 
 
             # 車体動作
             if flag == 1:
                 # ctrl.unit.drive(ctrl.unit.ACT_FORWARD,10)
                 ctrl.unit.position_control()
-                print(ctrl.unit.gyro.angle)
             elif flag == 2:
                 ctrl.unit.drive(ctrl.unit.ACT_FORWARD, 0)
                 ctrl.unit.gyro.getAccel()

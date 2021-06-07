@@ -38,8 +38,8 @@ class Gyro():
         else:
             return val
 
-    def setAngleoffset(self, angle_row):
-        self.angle_offset = angle_row - 90.0
+    def setAngleoffset(self):
+        self.angle_offset = self.angle_row - 90.0
 
     def getGyro(self):
         for j in range(3):

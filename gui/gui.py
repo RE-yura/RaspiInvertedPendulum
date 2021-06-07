@@ -11,6 +11,8 @@ class MainWindow(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.ANGLE_CONST = 200
+        self.ValSum = 0
 
         self.file = FileOp()
 
@@ -77,6 +79,7 @@ class MainWindow(QWidget):
         self.server.sendStr("Reset")
 
     def initAngle(self):
+        self.ValSum += self.sld.value() / self.ANGLE_CONST
         self.sld.setValue(0)
         self.server.sendStr("Init")
 
@@ -85,11 +88,8 @@ class MainWindow(QWidget):
 
     def sliderChangeValue(self, value):
         # """ Slider の値が変わった時に呼ばれる処理 """
-        self.server.sendStr("Change "+str(self.sld.value()))
-        
-        # self.spb[i].setValue(sld.value())
-        # self.updateColor()
-        pass
+        AngleVal = self.sld.value() / self.ANGLE_CONST + self.ValSum
+        self.server.sendStr("Change "+str(AngleVal))
 
 if __name__ == '__main__':
     # シンプルコマンド
