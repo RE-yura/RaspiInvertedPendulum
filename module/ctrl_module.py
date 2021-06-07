@@ -44,19 +44,25 @@ def main():
             mode = ctrl.client.receiveStr()
 
             # フラグ取得
-            if mode == "Run":
-                flag = 1
-                ctrl.getGain()
-            elif mode == "Stop":
-                flag = 2
+            if not mode == None:
+                if mode == "Run":
+                    flag = 1
+                    ctrl.getGain()
+                elif mode == "Stop":
+                    flag = 2
 
-            elif mode == "Init":
-                ctrl.unit.gyro.setAngleoffset(ctrl.unit.gyro.angle_row)
+                elif mode == "Init":
+                    ctrl.unit.gyro.setAngleoffset(ctrl.unit.gyro.angle_row)
 
-            elif mode == "Close":
-                ctrl.unit.drive(ctrl.unit.ACT_FORWARD, 0)
+                elif mode == "Close":
+                    ctrl.unit.drive(ctrl.unit.ACT_FORWARD, 0)
+                    break
 
-                break
+                elif 'Change' in mode:
+                    Carray = mode.split(" ")
+                    print(float(Carray[1]))
+                    pass
+
 
             # 車体動作
             if flag == 1:
