@@ -1,0 +1,27 @@
+{
+    // === Python ================================================
+    "python.showStartPage": false,
+    "python.linting.enabled": true, // 文法チェックを行う
+    "python.linting.pylintEnabled": false, // pylint は使わない
+    "python.linting.pycodestyleEnabled": false, // pep8 は使わない
+    "python.linting.flake8Enabled": true, // 文法チェックに flake8 を使う
+    "python.linting.flake8Args": [
+        "--ignore=E111, E114, E402, E501, F401, F841, E722, F403, F405, E704, E265, E226, E711, E712, W504, E241"
+    ],
+    "python.formatting.provider": "autopep8", // コードの自動整形に autopep8 を使う
+    "python.formatting.autopep8Args": [
+        "--indent-size=4",
+        "--ignore=E70",
+        "--max-line-length=120"
+    ],
+    "[python]": {
+        "editor.tabSize": 4 // インデント幅4
+    },
+    "python.analysis.extraPaths": [
+        "./test",
+        "./gui",
+        "./ctrl_module"
+    ],
+    "python.analysis.autoImportCompletions": false,
+    "python.autoComplete.showAdvancedMembers": false,
+}
