@@ -3,7 +3,7 @@ import csv
 
 class FileOp():
     def __init__(self):
-        self.path = './GainParam.txt'
+        self.path = '../param/GainParam.txt'
 
     def ResetChar(self):
         with open(self.path, mode='w') as f:

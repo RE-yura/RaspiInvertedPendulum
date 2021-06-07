@@ -5,7 +5,6 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from file import *
-import sys
 
 
 class SubWindow:
@@ -16,7 +15,7 @@ class SubWindow:
         pre_data = self.file.ReadList()
 
         okButton = QPushButton("OK")
-        okButton.clicked.connect(self.getParam)
+        okButton.clicked.connect(self.regParam)
 
         cancelButton = QPushButton("Cancel")
         cancelButton.clicked.connect(self.w.close)
@@ -29,12 +28,15 @@ class SubWindow:
         hbox.addWidget(cancelButton)
 
         self.gain_list = [[0 for _ in range(3)] for _ in range(2)]
-
+        print(pre_data)
         GainVBox = QVBoxLayout()
         for i in range(2):
             GainHBox = QHBoxLayout()
             for j in range(3):
-                self.gain_list[i][j] = QLineEdit(pre_data[i][j])
+                if len(pre_data) == 2 and len(pre_data[0]) == 3:
+                    self.gain_list[i][j] = QLineEdit(pre_data[i][j])
+                else:
+                    self.gain_list[i][j] = QLineEdit("0.0")
                 self.gain_list[i][j].setValidator(QDoubleValidator())
                 GainHBox.addWidget(self.gain_list[i][j])
             GainVBox.addLayout(GainHBox)
@@ -54,9 +56,10 @@ class SubWindow:
     def show(self):
         self.w.exec_()
 
-    def getParam(self):
+    def regParam(self):
         self.file.ResetChar()
         for i in range(2):
             print([j.text() for j in self.gain_list[i]])
             self.file.WriteList([j.text() for j in self.gain_list[i]])
+
         self.w.close()

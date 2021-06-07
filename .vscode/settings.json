@@ -16,5 +16,12 @@
     ],
     "[python]": {
         "editor.tabSize": 4 // インデント幅4
-    }
+    },
+    "python.analysis.extraPaths": [
+        "./test",
+        "./gui",
+        "./ctrl_module"
+    ],
+    "python.analysis.autoImportCompletions": false,
+    "python.autoComplete.showAdvancedMembers": false,
 }
