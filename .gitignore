@@ -1,4 +1,4 @@
-/test/__pycache__
+/module/__pycache__
 /gui/__pycache__
 /gui/GainParam.txt
-/test/ADconverter.py
+/module/ADconverter.py
