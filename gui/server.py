@@ -3,6 +3,8 @@ from socket import *
 ##################
 # 送信側プログラム#
 ##################
+
+
 class Server():
     def __init__(self):
         # 送信側アドレスの設定
@@ -11,7 +13,7 @@ class Server():
         # 送信側ポート番号
         SrcPort = 11111
         # 送信側アドレスをtupleに格納
-        SrcAddr = (SrcIP,SrcPort)
+        SrcAddr = (SrcIP, SrcPort)
 
         # 受信側アドレスの設定
         # 受信側IP
@@ -19,7 +21,7 @@ class Server():
         # 受信側ポート番号
         DstPort = 22222
         # 受信側アドレスをtupleに格納
-        self.DstAddr = (DstIP,DstPort)
+        self.DstAddr = (DstIP, DstPort)
 
         # ソケット作成
         self.udpClntSock = socket(AF_INET, SOCK_DGRAM)
@@ -32,9 +34,9 @@ class Server():
         # バイナリに変換
         self.data = str.encode('utf-8')
         # 受信側アドレスに送信
-        self.udpClntSock.sendto(self.data,self.DstAddr)
+        self.udpClntSock.sendto(self.data, self.DstAddr)
 
 
-if __name__ == "__main__":   
+if __name__ == "__main__":
     server = Server()
     server.sendUDP("aaaa")
