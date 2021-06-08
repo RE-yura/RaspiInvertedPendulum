@@ -18,7 +18,7 @@ class Gyro():
         self.angle_accel = 0.0
         self.angle = 0.0
         self.angle_offset = 0.0
-        self.Cf = 0.995
+        self.CF = 0.995
 
         self.PWR_MGMT_1 = 0x6b
         # signal.signal(signal.SIGALRM, self.intervalHandler)
@@ -38,24 +38,24 @@ class Gyro():
         else:
             return val
 
-    def setAngleoffset(self):
+    def set_angle_offset(self):
         self.angle_offset = self.angle_row - 90.0
 
-    def getGyro(self):
+    def get_gyro(self):
         for j in range(3):
             self.gr[j] = self.read_word_sensor(self.GYRO_OUT[j]) / 16384.0
         # print("gyro")
 
-    def getAccel(self):
+    def get_accel(self):
         for j in range(3):
             self.ac[j] = self.read_word_sensor(self.ACCEL_OUT[j]) / 16384.0
 
-    def getAngle(self):
+    def get_angle(self):
         self.angle_row = np.arctan2(
             self.ac[2], self.ac[0]) * 180 / 3.141592
         self.angle_accel = self.angle_row - self.angle_offset
-        self.angle = self.Cf * (self.angle + self.gr[1]) + (1 - self.Cf) * self.angle_accel
-        # self.angle = self.Cf * self.angle  + (1 - self.Cf) * self.angle_accel
+        self.angle = self.CF * (self.angle + self.gr[1]) + (1 - self.CF) * self.angle_accel
+        # self.angle = self.CF * self.angle  + (1 - self.CF) * self.angle_accel
         # self.angle =  self.angle_accel
 
         # print("Angle:",self.angle,"     gyro:", self.gr[1])
@@ -68,9 +68,9 @@ def main():
         # ==================================================
 
         while True:
-            gyro.getAccel()
-            gyro.getGyro()
-            gyro.getAngle()
+            gyro.get_accel()
+            gyro.get_gyro()
+            gyro.get_angle()
             print('{0:4.3f}' .format(gyro.angle))
             sleep(0.1)
             # print ('{0:4.3f},   {0:4.3f},    {0:4.3f},     {0:4.3f},      {0:4.3f},      {0:4.3f},' .format(gyro.gr[0], gyro.gr[1], gyro.gr[2], gyro.ac[0], gyro.ac[1], gyro.ac[2]))
