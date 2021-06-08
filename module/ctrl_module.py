@@ -17,14 +17,14 @@ class Ctrl():
         self.client = Client()
         self.file = FileOp()
 
-    def getGain(self):
+    def get_gain(self):
         # GainParam.txtからゲイン取得
-        arrayFlo = [[0] * 3] * 2
-        arrayStr = self.file.ReadList()
-        for i in range(len(arrayStr)):
-            arrayFlo[i] = [float(j) for j in arrayStr[i]]
-        self.unit.setGain(arrayFlo[0])
-        # print(arrayFlo[0])
+        array_flo = [[0] * 3] * 2
+        array_str = self.file.read_list()
+        for i in range(len(array_str)):
+            array_flo[i] = [float(j) for j in array_str[i]]
+        self.unit.set_gain(array_flo[0])
+        # print(array_flo[0])
 
     def __del__(self):
         del self.unit
@@ -41,35 +41,41 @@ def main():
         # ==================================================
         while True:
             # UDP通信でmode取得
-            mode = ctrl.client.receiveStr()
+            mode = ctrl.client.receive_str()
 
             # フラグ取得
-            if mode == "Run":
-                flag = 1
-                ctrl.getGain()
-            elif mode == "Stop":
-                flag = 2
+            if not mode == None:
+                if mode == "Run":
+                    flag = 1
+                    ctrl.get_gain()
+                elif mode == "Stop":
+                    flag = 2
 
-            elif mode == "Init":
-                ctrl.unit.gyro.setAngleoffset(ctrl.unit.gyro.angle_row)
+                elif mode == "Init":
+                    
+                    ctrl.unit.gyro.set_angle_offset()
 
-            elif mode == "Close":
-                ctrl.unit.drive(ctrl.unit.ACT_FORWARD, 0)
+                elif mode == "Close":
+                    ctrl.unit.drive(ctrl.unit.ACT_FORWARD, 0)
+                    break
 
-                break
+                elif 'Change' in mode:
+                    c_array = mode.split(" ")
+                    ctrl.unit.gyro.angle_offset += float(c_array[1])
+                    print(float(c_array[1]))
+
 
             # 車体動作
             if flag == 1:
                 # ctrl.unit.drive(ctrl.unit.ACT_FORWARD,10)
                 ctrl.unit.position_control()
-                print(ctrl.unit.gyro.angle)
             elif flag == 2:
                 ctrl.unit.drive(ctrl.unit.ACT_FORWARD, 0)
-                ctrl.unit.gyro.getAccel()
-                ctrl.unit.gyro.getAngle()
+                ctrl.unit.gyro.get_accel()
+                ctrl.unit.gyro.get_angle()
             else:
-                ctrl.unit.gyro.getAccel()
-                ctrl.unit.gyro.getAngle()
+                ctrl.unit.gyro.get_accel()
+                ctrl.unit.gyro.get_angle()
             time.sleep(0.01)
 
     except KeyboardInterrupt:

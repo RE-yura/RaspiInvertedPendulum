@@ -11,58 +11,83 @@ class MainWindow(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.ANGLE_CONST = 200
+        self.val_sum = 0
 
         self.file = FileOp()
 
         layout = QGridLayout()
 
         StartButton = QPushButton("Run", self)
-        StartButton.clicked.connect(self.RunMode)
+        StartButton.clicked.connect(self.run_mode)
         layout.addWidget(StartButton, 0, 0)
 
         StopButton = QPushButton("Stop", self)
-        StopButton.clicked.connect(self.StopMode)
+        StopButton.clicked.connect(self.stop_mode)
         layout.addWidget(StopButton, 0, 1)
 
+        # 水平方向のスライダー作成
+        self.sld = QSlider(Qt.Vertical, self)
+        self.sld.setRange(-100, 100)
+        self.sld.setValue(0)
+        # スライダーがフォーカスされないようにする
+        self.sld.setFocusPolicy(Qt.NoFocus)
+        self.sld.valueChanged[int].connect(self.slider_change_value)
+        layout.addWidget(self.sld, 0, 3, 3, 1)
+
+        init_angle_button = QPushButton("Init", self)
+        init_angle_button.clicked.connect(self.init_angle)
+        layout.addWidget(init_angle_button, 1, 0)
+
+        init_angle_button = QPushButton("Reset", self)
+        init_angle_button.clicked.connect(self.reset_angle)
+        layout.addWidget(init_angle_button, 1, 1)
+
         makeWindowButton = QPushButton("Gain", self)
-        makeWindowButton.clicked.connect(self.makeWindow)
-        layout.addWidget(makeWindowButton, 1, 0)
+        makeWindowButton.clicked.connect(self.make_window)
+        layout.addWidget(makeWindowButton, 2, 0)
 
-        initAngleButton = QPushButton("Init", self)
-        initAngleButton.clicked.connect(self.initAngle)
-        layout.addWidget(initAngleButton, 1, 1)
-
-        CloseButton = QPushButton("Close", self)
-        CloseButton.clicked.connect(self.closeWindow)
-        # CloseButton.clicked.connect(self.close)
-        layout.addWidget(CloseButton, 2, 0, 1, 2)
+        close_button = QPushButton("Close", self)
+        close_button.clicked.connect(self.clode_window)
+        # close_button.clicked.connect(self.close)
+        layout.addWidget(close_button, 2, 1)
         self.setLayout(layout)
 
         self.setWindowTitle('InvertedPendulum')
         self.setGeometry(300, 300, 300, 100)
 
-    def makeWindow(self):
+    def make_window(self):
         subWindow = SubWindow(self)
         subWindow.show()
 
-    def RunMode(self):
-        arrayFlo = [[0] * 3] * 2
-        arrayStr = self.file.ReadList()
-        for i in range(len(arrayStr)):
-            arrayFlo[i] = [float(j) for j in arrayStr[i]]
-        # print(arrayFlo)
-        self.server.sendStr("Run")
+    def run_mode(self):
+        array_flo = [[0] * 3] * 2
+        array_str = self.file.read_list()
+        for i in range(len(array_str)):
+            array_flo[i] = [float(j) for j in array_str[i]]
+        # print(array_flo)
+        self.server.send_str("Run")
 
-    def closeWindow(self):
-        self.server.sendStr("Close")
+    def clode_window(self):
+        self.server.send_str("Close")
         self.close()
 
-    def initAngle(self):
-        self.server.sendStr("Init")
+    def reset_angle(self):
+        self.sld.setValue(0)
+        self.server.send_str("Reset")
 
-    def StopMode(self):
-        self.server.sendStr("Stop")
+    def init_angle(self):
+        self.val_sum += self.sld.value() / self.ANGLE_CONST
+        self.sld.setValue(0)
+        self.server.send_str("Init")
 
+    def stop_mode(self):
+        self.server.send_str("Stop")
+
+    def slider_change_value(self, value):
+        # """ Slider の値が変わった時に呼ばれる処理 """
+        angle_val = self.sld.value() / self.ANGLE_CONST + self.val_sum
+        self.server.send_str("Change "+str(angle_val))
 
 if __name__ == '__main__':
     # シンプルコマンド

@@ -31,9 +31,9 @@ class EncoderedMotor():
     def __init__(self, gears, ENCORDER_PIN_A, ENCORDER_PIN_B, MOTOR_PIN_A, MOTOR_PIN_B):
         self.angle = 0
         self.prev_data = 0
-        self.setDelta(gears)
-        self.setEncorderPin(ENCORDER_PIN_A, ENCORDER_PIN_B)
-        self.setMotorPin(MOTOR_PIN_A, MOTOR_PIN_B)
+        self.set_delta(gears)
+        self.set_encorder_pin(ENCORDER_PIN_A, ENCORDER_PIN_B)
+        self.set_motor_pin(MOTOR_PIN_A, MOTOR_PIN_B)
         self.setup()
         self.gyro = Gyro()
 
@@ -41,15 +41,15 @@ class EncoderedMotor():
         GPIO.add_event_detect(self.IN_ENCORDER_PIN_A, GPIO.BOTH, callback=self.callback)
         GPIO.add_event_detect(self.IN_ENCORDER_PIN_B, GPIO.BOTH, callback=self.callback)
 
-    def setDelta(self, gears):
+    def set_delta(self, gears):
         self.delta = 360. / gears
 
-    def setEncorderPin(self, ENCORDER_PIN_A, ENCORDER_PIN_B):
+    def set_encorder_pin(self, ENCORDER_PIN_A, ENCORDER_PIN_B):
         # エンコーダーピン配置
         self.IN_ENCORDER_PIN_A = ENCORDER_PIN_A
         self.IN_ENCORDER_PIN_B = ENCORDER_PIN_B
 
-    def setMotorPin(self, MOTOR_PIN_A, MOTOR_PIN_B):
+    def set_motor_pin(self, MOTOR_PIN_A, MOTOR_PIN_B):
         # モーターピン配置
         self.IN_MOTOR_PIN_A = MOTOR_PIN_A
         self.IN_MOTOR_PIN_B = MOTOR_PIN_B
@@ -121,26 +121,26 @@ def main():
     try:
         # =======初期設定===================================
         # インスタンス生成
-        encordered_motor_R = EncoderedMotor(Gear.MOTOR_GEAR_1, PinType.ENCORDER_1A,
+        encordered_motor_r = EncoderedMotor(Gear.MOTOR_GEAR_1, PinType.ENCORDER_1A,
                                             PinType.ENCORDER_1B, PinType.MOTOR_1A, PinType.MOTOR_1B)
 
         # ==================================================
 
         while True:
-            if encordered_motor_R.angle > -5:
-                encordered_motor_R.motor_ctrl(DriveType.ROT_RIGHT, 10)
-            elif encordered_motor_R.angle < -365:
-                encordered_motor_R.motor_ctrl(DriveType.ROT_LEFT, 10)
+            if encordered_motor_r.angle > -5:
+                encordered_motor_r.motor_ctrl(DriveType.ROT_RIGHT, 10)
+            elif encordered_motor_r.angle < -365:
+                encordered_motor_r.motor_ctrl(DriveType.ROT_LEFT, 10)
 
-            print(encordered_motor_R.angle)
+            print(encordered_motor_r.angle)
             time.sleep(0.1)
 
     except KeyboardInterrupt:
         # callback登録
-        GPIO.remove_event_detect(encordered_motor_R.IN_ENCORDER_PIN_A)
-        GPIO.remove_event_detect(encordered_motor_R.IN_ENCORDER_PIN_B)
+        GPIO.remove_event_detect(encordered_motor_r.IN_ENCORDER_PIN_A)
+        GPIO.remove_event_detect(encordered_motor_r.IN_ENCORDER_PIN_B)
 
-    del encordered_motor_R
+    del encordered_motor_r
 
 
 if __name__ == "__main__":

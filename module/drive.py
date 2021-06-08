@@ -11,74 +11,73 @@ class Motor(Enum):
 
 class DriveUnit():
 
-    def __init__(self, Glist):
+    def __init__(self, glist):
         self.ACT_FORWARD = 0
         self.ACT_BACKWARD = 1
         self.ACT_BREAK = 2
         self.ACT_STOP = 3
 
-        self.Angle_offset = 0
+        self.last_err = 0
 
-        self.lastErr = 0
+        self.U_MAX = 100
 
-        self.UMAX = 100
-        self.errP = 0
-        self.errD = 0
-        self.errI = 0
-        self.gainP = 0
-        self.gainD = 0
-        self.gainI = 0
+        self.err_p = 0
+        self.err_d = 0
+        self.err_i = 0
+        self.gain_p = 0
+        self.gain_d = 0
+        self.gain_i = 0
         self.exu = 0
         self.u = 0
 
         self.ANG_VELO = 780  # 角速度±780dps
         self.dt = 0
         self.now = 0
-        self.preTime = time.time()
+        self.pre_time = time.time()
 
         # インスタンス生成
         self.gyro = Gyro()
-        self.motorR = EncoderedMotor(Gear.MOTOR_GEAR_1, PinType.ENCORDER_1A,
+        self.motor_r = EncoderedMotor(Gear.MOTOR_GEAR_1, PinType.ENCORDER_1A,
                                      PinType.ENCORDER_1B, PinType.MOTOR_1A, PinType.MOTOR_1B)
-        self.motorL = EncoderedMotor(Gear.MOTOR_GEAR_2, PinType.ENCORDER_2A,
+        self.motor_l = EncoderedMotor(Gear.MOTOR_GEAR_2, PinType.ENCORDER_2A,
                                      PinType.ENCORDER_2B, PinType.MOTOR_2A, PinType.MOTOR_2B)
 
         # ゲイン登録
-        self.setGain(Glist)
+        self.set_gain(glist)
 
     def drive(self, dir, pwm):
         # 車体移動
         if dir == self.ACT_FORWARD:
-            self.motorR.motor_ctrl(DriveType.ROT_RIGHT, abs(pwm))
-            self.motorL.motor_ctrl(DriveType.ROT_LEFT, abs(pwm))
+            self.motor_r.motor_ctrl(DriveType.ROT_RIGHT, abs(pwm))
+            self.motor_l.motor_ctrl(DriveType.ROT_LEFT, abs(pwm))
         elif dir == self.ACT_BACKWARD:
-            self.motorR.motor_ctrl(DriveType.ROT_LEFT, abs(pwm))
-            self.motorL.motor_ctrl(DriveType.ROT_RIGHT, abs(pwm))
+            self.motor_r.motor_ctrl(DriveType.ROT_LEFT, abs(pwm))
+            self.motor_l.motor_ctrl(DriveType.ROT_RIGHT, abs(pwm))
 
     def calc_dt(self):
         self.now = time.time()
-        self.dt = (self.now - self.preTime)
-        self.preTime = self.now
+        self.dt = (self.now - self.pre_time)
+        self.pre_time = self.now
 
     def calc_errp(self):
-        self.errP = (self.gyro.angle / 90.0 - 1) * self.UMAX  # P成分：傾き-180～0度 → -100～100
+        self.err_p = (self.gyro.angle / 90.0 - 1) * self.U_MAX  # P成分：傾き-180～0度 → -100～100
 
-        if abs(self.errP) < 0.01:
-            self.errP = 0
+        if abs(self.err_p) < 0.01:
+            self.err_p = 0
 
     def calc_errd(self):
-        self.errD = (self.errP - self.lastErr) / self.dt / self.ANG_VELO * self.UMAX  # D成分：角速度±780dps → -100～100
-        if abs(self.errD) < 1:
-            self.errD = 0
-        self.lastErr = self.errP
+        self.err_d = (self.err_p - self.last_err) / self.dt / self.ANG_VELO * self.U_MAX  # D成分：角速度±780dps → -100～100
+        if abs(self.err_d) < 1:
+            self.err_d = 0
+        self.last_err = self.err_p
 
     def calc_erri(self):
-        self.errI += self.errP * self.dt  # I成分
+        self.err_i += self.err_p * self.dt  # I成分
 
     def position_control(self):
-        self.gyro.getAccel()
-        self.gyro.getGyro()
-        self.gyro.getAngle()
+        self.gyro.get_accel()
+        self.gyro.get_gyro()
+        self.gyro.get_angle()
 
         # dt計算
         self.calc_dt()
@@ -89,8 +88,8 @@ class DriveUnit():
         self.calc_erri()
 
         # PWM計算
-        self.u = self.exu * self.u + (1 - self.exu) * (self.gainP * self.errP +
-                                                       self.gainD * self.errD + self.gainI * self.errI)
+        self.u = self.exu * self.u + (1 - self.exu) * (self.gain_p * self.err_p +
+                                                       self.gain_d * self.err_d + self.gain_i * self.err_i)
 
         if self.u > 100:
             self.u = 100
@@ -100,10 +99,10 @@ class DriveUnit():
         # モーター駆動
         self.balance()
 
-    def setGain(self, Glist):
-        self.gainP = Glist[0]
-        self.gainD = Glist[1]
-        self.gainI = Glist[2]
+    def set_gain(self, glist):
+        self.gain_p = glist[0]
+        self.gain_d = glist[1]
+        self.gain_i = glist[2]
 
     def balance(self):
         if self.u > 0:
@@ -113,8 +112,8 @@ class DriveUnit():
 
     def __del__(self):
         del self.gyro
-        del self.motorR
-        del self.motorL
+        del self.motor_r
+        del self.motor_l
 
 
 def main():

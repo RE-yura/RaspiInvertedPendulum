@@ -10,25 +10,25 @@ class Client():
     def __init__(self):
         # 受信側アドレスの設定
         # 受信側IP
-        SrcIP = "127.0.0.5"
+        SRC_IP = "127.0.0.5"
         # 受信側ポート番号
-        SrcPort = 22222
+        SRC_PORT = 22222
         # 受信側アドレスをtupleに格納
-        SrcAddr = (SrcIP, SrcPort)
+        SRC_ADDR = (SRC_IP, SRC_PORT)
         # バッファサイズ指定
         self.BUFSIZE = 1024
 
         # ソケット作成
-        self.udpServSock = socket(AF_INET, SOCK_DGRAM)
+        self.udp_serv_sock = socket(AF_INET, SOCK_DGRAM)
 
-        self.udpServSock.setblocking(False)
+        self.udp_serv_sock.setblocking(False)
 
         # 受信側アドレスでソケットを設定
-        self.udpServSock.bind(SrcAddr)
+        self.udp_serv_sock.bind(SRC_ADDR)
 
-    def receiveStr(self):
+    def receive_str(self):
         try:
-            data, addr = self.udpServSock.recvfrom(self.BUFSIZE)
+            data, addr = self.udp_serv_sock.recvfrom(self.BUFSIZE)
             # 受信データと送信アドレスを出力
             # print(data.decode())
             return data.decode()
@@ -40,7 +40,7 @@ def main():
     client = Client()
     while True:
         print("wait")
-        client.receiveUDP()
+        client.receive_udp()
         time.sleep(0.01)
 
 
